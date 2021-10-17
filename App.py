@@ -85,7 +85,7 @@ class App:
     def passwordVault(self):
         for widget in self.window.winfo_children():
             widget.destroy()
-        self.window.geometry("650x350")
+        self.window.geometry("700x350")
 
         self.PVlbl = Label(self.window, text="Сохранённые пароли")
         self.PVlbl.grid(column=1)
@@ -99,5 +99,28 @@ class App:
         self.PVlbl.grid(row=2, column=1, padx=80)
         self.PVlbl = Label(self.window, text="Пароль")
         self.PVlbl.grid(row=2, column=2, padx=80)
+
+        cursor.execute("SELECT * from vault")
+        if (cursor.fetchall() != None):
+            i = 0
+            while True:
+                cursor.execute("SELECT * FROM vault")
+                array = cursor.fetchall()
+
+                self.PVlbl1 = Label(self.window, text=(array[i][1]), font=("Helvetica, 12"))
+                self.PVlbl1.grid(column=0, row=i+3)
+                self.PVlbl1 = Label(self.window, text=(array[i][2]), font=("Helvetica, 12"))
+                self.PVlbl1.grid(column=1, row=i+3)
+                self.PVlbl1 = Label(self.window, text=(array[i][3]), font=("Helvetica, 12"))
+                self.PVlbl1.grid(column=2, row=i+3)
+
+                self.PVbtn = Button(self.window, text="Удалить", command=partial(self.core.removeEntry, array[i][0], self, cursor, db))
+                self.PVbtn.grid(column=3, row=i+3, pady=10)
+
+                i = i + 1
+
+                cursor.execute("SELECT * FROM vault")
+                if (len(cursor.fetchall()) <= 1):
+                    break
 
 application = App()
