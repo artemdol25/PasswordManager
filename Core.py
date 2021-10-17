@@ -1,10 +1,11 @@
+import hashlib
+
 class Core:
 
     def checkPassword(self, app, cursor):
-        match = self.getMasterPassword(app, cursor)
+        self.match = self.getMasterPassword(app, cursor)
 
-
-        if match:
+        if self.match:
             app.passwordVault()
         else:
             app.LStxt.delete(0, "end")
@@ -12,7 +13,7 @@ class Core:
 
     def savePassword(self, app, cursor, db):
         if app.FStxt.get() == app.FStxt1.get():
-            hashedPassword = app.FStxt.get()
+            hashedPassword = self.hashPassword(app.FStxt.get().encode("utf-8"))
 
             insert_password = """INSERT INTO masterpassword(password)
             VALUES(?) """
@@ -24,6 +25,11 @@ class Core:
             app.FSlbl2.config(text="Пароли не совпадают")
 
     def getMasterPassword(self, app, cursor):
-        checkHashedPassword = app.LStxt.get()
-        cursor.execute("SELECT * FROM masterpassword WHERE id = 1 AND password = ?", [(checkHashedPassword)])
+        self.checkHashedPassword = self.hashPassword(app.LStxt.get().encode("utf-8"))
+        cursor.execute("SELECT * FROM masterpassword WHERE id = 1 AND password = ?", [(self.checkHashedPassword)])
         return cursor.fetchall()
+
+    def hashPassword(self, input):
+        self.hash = hashlib.md5(input)
+        self.hash = self.hash.hexdigest()
+        return self.hash
