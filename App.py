@@ -12,6 +12,14 @@ id INTEGER PRIMARY KEY,
 password TEXT NOT NULL);
 """)
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS vault(
+id INTEGER PRIMARY KEY,
+website TEXT NOT NULL,
+username TEXT NOT NULL,
+password TEXT NOT NULL);
+""")
+
 class App:
 
     def __init__(self):
@@ -77,10 +85,19 @@ class App:
     def passwordVault(self):
         for widget in self.window.winfo_children():
             widget.destroy()
-        self.window.geometry("700x350")
+        self.window.geometry("650x350")
 
-        self.PVlblb = Label(self.window, text="Сохранённые пароли")
-        self.PVlblb.config(anchor=CENTER)
-        self.PVlblb.pack()
+        self.PVlbl = Label(self.window, text="Сохранённые пароли")
+        self.PVlbl.grid(column=1)
+
+        self.PVbtn = Button(self.window, text="+", command=partial(self.core.addEntry, self, cursor, db))
+        self.PVbtn.grid(column=1, pady=10)
+
+        self.PVlbl = Label(self.window, text="Сайт")
+        self.PVlbl.grid(row=2, column=0, padx=80)
+        self.PVlbl = Label(self.window, text="Логин")
+        self.PVlbl.grid(row=2, column=1, padx=80)
+        self.PVlbl = Label(self.window, text="Пароль")
+        self.PVlbl.grid(row=2, column=2, padx=80)
 
 application = App()
