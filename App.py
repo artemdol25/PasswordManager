@@ -1,6 +1,16 @@
+import sqlite3
 from tkinter import *
 from functools import partial
 from Core import Core
+
+with sqlite3.connect("Passwords.db") as db:
+    cursor = db.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS masterpassword(
+id INTEGER PRIMARY KEY,
+password TEXT NOT NULL);
+""")
 
 class App:
 
@@ -9,7 +19,12 @@ class App:
         self.core = Core()
         self.window.title("Менеджер паролей")
 
-        self.firstScreen()
+        cursor.execute("SELECT * from masterpassword")
+
+        if cursor.fetchall():
+            self.loginScreen()
+        else:
+            self.firstScreen()
 
         self.window.mainloop()
 
@@ -27,7 +42,7 @@ class App:
         self.LSlbl1 = Label(self.window)
         self.LSlbl1.pack()
 
-        self.LSbtn = Button(self.window, text="Войти", command=partial(self.core.checkPassword, self))
+        self.LSbtn = Button(self.window, text="Войти", command=partial(self.core.checkPassword, self, cursor))
         self.LSbtn.pack(pady=10)
 
         self.LSAuthor = Label(self.window, text="\u00a9 2021 Долгополов Артём")
@@ -50,7 +65,7 @@ class App:
         self.FStxt1 = Entry(self.window, width=20, show="*")
         self.FStxt1.pack()
 
-        self.LSbtn = Button(self.window, text="Войти", command=partial(self.core.savePassword, self))
+        self.LSbtn = Button(self.window, text="Войти", command=partial(self.core.savePassword, self, cursor, db))
         self.LSbtn.pack(pady=10)
 
         self.FSlbl2 = Label(self.window)
